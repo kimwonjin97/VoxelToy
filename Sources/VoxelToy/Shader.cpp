@@ -1,8 +1,8 @@
-#include "Glad/include/glad/glad.h"
-#include "Shader.hpp"
+#include "Glad/glad.h"
+#include "VoxelToy/Shader.hpp"
 #include <fstream>
 #include <sstream>
-
+#include <iostream>
 
 Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)
 	: m_ID(0), m_vertexFilePath(vertexPath), m_fragmentFilePath(fragmentPath)

@@ -26,7 +26,7 @@ endif()
 #
 
 set(DEFAULT_PROJECT_OPTIONS
-        CXX_STANDARD              17 # Not available before CMake 3.8.2; see below for manual command line argument addition
+        CXX_STANDARD              20 # Not available before CMake 3.8.2; see below for manual command line argument addition
         LINKER_LANGUAGE           "CXX"
         POSITION_INDEPENDENT_CODE ON
         )
@@ -130,7 +130,7 @@ endif()
 
 # Code coverage - Debug only
 # NOTE: Code coverage results with an optimized (non-Debug) build may be misleading
-if (CMAKE_BUILD_TYPE MATCHES Debug AND (CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang"))
+if (CMAKE_BUILD_TYPE MATCHES Debug AND BUILD_COVERAGE AND (CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang"))
     set(DEFAULT_COMPILE_OPTIONS ${DEFAULT_COMPILE_OPTIONS}
             -g
             -O0

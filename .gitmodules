@@ -1,0 +1,9 @@
+[submodule "External/GLFW"]
+	path = External/GLFW
+	url = git@github.com:kimwonjin97/glfw.git
+[submodule "External/glm"]
+	path = External/glm
+	url = git@github.com:g-truc/glm.git
+[submodule "External/imgui"]
+	path = External/imgui
+	url = git@github.com:kimwonjin97/imgui.git

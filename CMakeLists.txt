@@ -58,7 +58,7 @@ set(CMAKE_MACOSX_RPATH ON)
 set(CMAKE_OSX_ARCHITECTURES "x86_64")
 
 # Set Resources
-#get_filename_component(RESOURCES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Resources ABSOLUTE)
+get_filename_component(RESOURCES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Resources ABSOLUTE)
 #set(RESOURCES_OBJS
 #        ${RESOURCES_DIR}/font.png)
 

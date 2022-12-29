@@ -70,5 +70,6 @@ target_precompile_headers(
                 <string>
                 <vector>
                 <map>
+                <memory>
                 <unordered_map>
 )

@@ -69,7 +69,10 @@ target_precompile_headers(
             PRIVATE
                 <string>
                 <vector>
+                <array>
                 <map>
                 <memory>
+                <iostream>
+                <assert.h>
                 <unordered_map>
 )

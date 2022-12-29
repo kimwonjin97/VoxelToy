@@ -6,12 +6,11 @@ namespace VoxelToy
 	{
 	public:
 		Texture() = delete;
-//		Texture(uint32_t width, uint32_t height);
 		explicit Texture(std::string path);
 		~Texture();
 
 		void Bind(uint32_t slot = 0) const;
-		void UnBind() const;
+		[[maybe_unused]] static void UnBind() ;
 
 		[[nodiscard]] uint32_t getWidth() const
 		{
@@ -23,7 +22,7 @@ namespace VoxelToy
 		}
 		[[nodiscard]] uint32_t get_TextureID() const
 		{
-			return m_TextureID[m_Index];
+			return m_TextureID;
 		}
 
 		[[nodiscard]] const std::string& getPath() const
@@ -33,7 +32,7 @@ namespace VoxelToy
 
 		bool operator==(const Texture& rhs) const
 		{
-			return m_TextureID[m_Index] == rhs.m_TextureID[m_Index];
+			return m_TextureID == rhs.m_TextureID;
 		}
 		bool operator!=(const Texture& rhs) const
 		{
@@ -42,10 +41,11 @@ namespace VoxelToy
 
 	private:
 		std::string m_Path;
-		std::vector<uint32_t> m_TextureID;
 		uint8_t m_NumTexture, m_Index;
+		//		std::vector<uint32_t> m_TextureID;
+		uint32_t m_TextureID{};
 
-		int m_Width, m_Height, nrChannels;
+		int m_Width{}, m_Height{}, nrChannels{};
 		unsigned char* m_LocalData;
 	};
 }// namespace VoxelToy

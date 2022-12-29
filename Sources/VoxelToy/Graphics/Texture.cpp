@@ -3,7 +3,6 @@
 #include <glad/glad.h>
 #include <stb_image.h>
 
-#include <iostream>
 #include <utility>
 
 namespace VoxelToy
@@ -11,10 +10,8 @@ namespace VoxelToy
 	Texture::Texture(std::string path /*, int m_Index*/)
 		: m_Path(std::move(path)), m_NumTexture(1), m_Index(0)
 	{
-		//TODO: modify m_Index if m_NumberTexture is > 1
-		m_TextureID.reserve(m_NumTexture);
-		glGenTextures(1, &m_TextureID[m_Index]);
-		glBindTexture(GL_TEXTURE_2D, m_TextureID[m_Index]);
+		glGenTextures(m_NumTexture, &m_TextureID);
+		glBindTexture(GL_TEXTURE_2D, m_TextureID);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -38,17 +35,17 @@ namespace VoxelToy
 
 	Texture::~Texture()
 	{
-		glDeleteTextures(m_NumTexture, &m_TextureID[0]);
+		glDeleteTextures(m_NumTexture, &m_TextureID);
 	}
 
 	void Texture::Bind(uint32_t slot) const
 	{
 		glActiveTexture(GL_TEXTURE0 + slot);
-		glBindTexture(GL_TEXTURE_2D, m_TextureID[m_Index]);
+		glBindTexture(GL_TEXTURE_2D, m_TextureID);
 	}
 
-	void Texture::UnBind() const
+	[[maybe_unused]] void Texture::UnBind()
 	{
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
-}
+}// namespace VoxelToy

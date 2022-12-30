@@ -77,6 +77,11 @@ namespace VoxelToy
 		glUniform1f(GetUniformLocation(name), value);
 	}
 
+	void Shader::SetUniform2f(const std::string& name, float v0, float v1)
+	{
+		glUniform2f(GetUniformLocation(name), v0, v1);
+	}
+
 	void Shader::SetUniform4f(const std::string& name, float v0, float v1, float v2, float v3)
 	{
 		glUniform4f(GetUniformLocation(name), v0, v1, v2, v3);

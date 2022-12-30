@@ -11,7 +11,7 @@
 #include <VoxelToy/Graphics/VertexArray.hpp>
 #include <VoxelToy/Graphics/VertexBuffer.hpp>
 #include <VoxelToy/Graphics/Renderer.hpp>
-#include <iostream>
+#include <VoxelToy/Graphics/OpenGLContext.cpp>
 
 glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -37,54 +37,6 @@ const unsigned int SCR_WIDTH = 2400;
 const unsigned int SCR_HEIGHT = 1200;
 
 
-
-// Test error function
-void APIENTRY glDebugOutput(GLenum source,
-							GLenum type,
-							unsigned int id,
-							GLenum severity,
-							GLsizei length,
-							const char *message,
-							const void *userParam)
-{
-	if(id == 131169 || id == 131185 || id == 131218 || id == 131204) return; // ignore these non-significant error codes
-
-	std::cout << "---------------" << std::endl;
-	std::cout << "Debug message (" << id << "): " <<  message << std::endl;
-
-	switch (source)
-	{
-	case GL_DEBUG_SOURCE_API:             std::cout << "Source: API"; break;
-	case GL_DEBUG_SOURCE_WINDOW_SYSTEM:   std::cout << "Source: Window System"; break;
-	case GL_DEBUG_SOURCE_SHADER_COMPILER: std::cout << "Source: Shader Compiler"; break;
-	case GL_DEBUG_SOURCE_THIRD_PARTY:     std::cout << "Source: Third Party"; break;
-	case GL_DEBUG_SOURCE_APPLICATION:     std::cout << "Source: Application"; break;
-	case GL_DEBUG_SOURCE_OTHER:           std::cout << "Source: Other"; break;
-	} std::cout << std::endl;
-
-	switch (type)
-	{
-	case GL_DEBUG_TYPE_ERROR:               std::cout << "Type: Error"; break;
-	case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: std::cout << "Type: Deprecated Behaviour"; break;
-	case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:  std::cout << "Type: Undefined Behaviour"; break;
-	case GL_DEBUG_TYPE_PORTABILITY:         std::cout << "Type: Portability"; break;
-	case GL_DEBUG_TYPE_PERFORMANCE:         std::cout << "Type: Performance"; break;
-	case GL_DEBUG_TYPE_MARKER:              std::cout << "Type: Marker"; break;
-	case GL_DEBUG_TYPE_PUSH_GROUP:          std::cout << "Type: Push Group"; break;
-	case GL_DEBUG_TYPE_POP_GROUP:           std::cout << "Type: Pop Group"; break;
-	case GL_DEBUG_TYPE_OTHER:               std::cout << "Type: Other"; break;
-	} std::cout << std::endl;
-
-	switch (severity)
-	{
-	case GL_DEBUG_SEVERITY_HIGH:         std::cout << "Severity: high"; break;
-	case GL_DEBUG_SEVERITY_MEDIUM:       std::cout << "Severity: medium"; break;
-	case GL_DEBUG_SEVERITY_LOW:          std::cout << "Severity: low"; break;
-	case GL_DEBUG_SEVERITY_NOTIFICATION: std::cout << "Severity: notification"; break;
-	} std::cout << std::endl;
-	std::cout << std::endl;
-}
-
 int main(int argc, char** argv)
 {
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -108,7 +60,6 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
@@ -118,24 +69,11 @@ int main(int argc, char** argv)
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
     // initialize glad
-    if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
-    {
-        std::cout << "Failed to initialize GLAD" << std::endl;
-        return -1;
-    }
-	glEnable(GL_DEBUG_OUTPUT);
-	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-	glDebugMessageCallback(glDebugOutput, 0);
-	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
+	VoxelToy::OpenGLContext GLContext (window);
+	GLContext.Init();
 
-//    int nrAttributes;
-//    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
+	VoxelToy::Renderer::Init();
 
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    std::unique_ptr<VoxelToy::Shader> ourShader = std::make_unique<VoxelToy::Shader>(RESOURCES_DIR "/shader/camera.vs", RESOURCES_DIR "/shader/camera.fs");
 
     //cube
     float vertices[] = {
@@ -194,8 +132,10 @@ int main(int argc, char** argv)
 	layout->Push<float>(2);
 	VAO->AddVertexBuffer(*VBO, *layout);
 
-	auto ourTexture = std::make_shared<VoxelToy::Texture>(RESOURCES_DIR "/texture/block/lime_concrete_powder.png");
+	auto ourShader = std::make_unique<VoxelToy::Shader>(RESOURCES_DIR "/shader/camera.vs", RESOURCES_DIR "/shader/camera.fs");
+	auto ourTexture = std::make_unique<VoxelToy::Texture>(RESOURCES_DIR "/texture/block/lime_concrete_powder.png");
     ourShader->Bind();
+	ourTexture->Bind(0);
     ourShader->SetUniform1i("texture1", 0);
 
 
@@ -208,13 +148,8 @@ int main(int argc, char** argv)
 
         processInput(window);
 
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        ourTexture->Bind();
-
-        // activate shader
-        ourShader->Bind();
+		VoxelToy::Renderer::SetClearColor(glm::vec4(0.2f, 0.3f, 0.3f, 1.0f));
+        VoxelToy::Renderer::Clear();
 
         // pass projection matrix to shader (note that in this case it could change every frame)
         glm::mat4 projection = glm::perspective(glm::radians(fov), static_cast<float>(SCR_WIDTH) / static_cast<float>(SCR_HEIGHT) , 0.1f, 100.0f);
@@ -231,7 +166,7 @@ int main(int argc, char** argv)
         model = glm::rotate(model, glm::radians(angle), glm::vec3(5.0f, 5.0f, 0.0f));
         ourShader->SetUniformMat4f("model", model);
 
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        VoxelToy::Renderer::Draw();
 
         glfwSwapBuffers(window);
 
@@ -252,7 +187,7 @@ int main(int argc, char** argv)
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-		(void)window;
+	(void)window;
 	// make sure the viewport matches the new window dimensions; note that width and
 	// height will be significantly larger than specified on retina displays.
 	glViewport(0, 0, width, height);

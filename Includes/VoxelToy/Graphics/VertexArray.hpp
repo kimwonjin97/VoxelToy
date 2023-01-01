@@ -12,7 +12,7 @@ namespace VoxelToy
 		~VertexArray();
 
 		void Bind() const;
-		[[maybe_unused]] static void Unbind() ;
+		[[maybe_unused]] static void Unbind();
 
 		void AddVertexBuffer(const VertexBuffer& vertexBuffer, const VertexBufferLayout& layout) const;
 

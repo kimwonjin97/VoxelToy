@@ -24,6 +24,7 @@ float pitch =  0.0f;
 float lastX =  800.0f / 2.0f;
 float lastY =  600.0f / 2.0f;
 float fov   =  45.0f;
+//float cameraSpeed = 2.5f;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
@@ -145,16 +146,29 @@ int main(int argc, char** argv)
         glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
         ourShader->SetUniformMat4f("view", view);
 
-		for(auto cubePosition : cubePositions)
+		for(int i=-10; i<10; ++i)
 		{
-			// calculate the model matrix for each object and pass it to shader before drawing
-			glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-			model = glm::translate(model, cubePosition);
-//			float angle = 50.0f ;
-//			model = glm::rotate(model, glm::radians(angle), glm::vec3(5.0f, 5.0f, 0.0f));
-			ourShader->SetUniformMat4f("model", model);
-			VoxelToy::Renderer::Draw();
+			for(int j=-10; j<10; ++j)
+			{
+				glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+				model = glm::translate(model, glm::vec3((float)i, 0, (float)j));
+				//			float angle = 50.0f ;
+				//			model = glm::rotate(model, glm::radians(angle), glm::vec3(5.0f, 5.0f, 0.0f));
+				ourShader->SetUniformMat4f("model", model);
+				VoxelToy::Renderer::Draw();
+			}
 		}
+
+//		for(auto cubePosition : cubePositions)
+//		{
+//			// calculate the model matrix for each object and pass it to shader before drawing
+//			glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+//			model = glm::translate(model, cubePosition);
+////			float angle = 50.0f ;
+////			model = glm::rotate(model, glm::radians(angle), glm::vec3(5.0f, 5.0f, 0.0f));
+//			ourShader->SetUniformMat4f("model", model);
+//			VoxelToy::Renderer::Draw();
+//		}
 
         window->SwapBuffer();
 		window->PollEvents();
